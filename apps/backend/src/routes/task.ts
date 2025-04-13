@@ -92,23 +92,126 @@ taskRouter.get("/tasks", async (req: Request, res: Response) => {
     res.status(200).json({
       tasks,
     });
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
 });
 
-taskRouter.delete("/task", (req: Request, res: Response) => {
-  const { task_id } = req.body;
+taskRouter.delete(
+  "/task",
+  userMiddleware,
+  async (req: Request, res: Response) => {
+    const user = req.user;
+    const { task_id } = req.body;
 
-  // check if that task exists
-  // and task belong to the user
-  // Now delte that given task
-});
+    try {
+      const taskExists = await db.task.findUnique({
+        where: {
+          id: task_id,
+        },
+        select: {
+          id: true,
+        },
+      });
 
-taskRouter.patch("/task", (req: Request, res: Response) => {
-  const { task_id } = req.body;
+      if (!taskExists) {
+        res.status(400).json({
+          status: "error",
+          error: "Task doesn't exists!",
+        });
+        return;
+      }
 
-  // check if that task exists
-  // and task belong to the user
-  // Now update/patch specific table value.
-});
+      const taskDelete = await db.task.delete({
+        where: {
+          userId: user.id,
+          id: taskExists.id,
+        },
+      });
+
+      if (!taskDelete) {
+        res.status(400).json({
+          status: "error",
+          error: "Error deleting task.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Task removed successfully!",
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        message: "",
+      });
+    }
+  },
+);
+
+taskRouter.patch(
+  "/task",
+  userMiddleware,
+  async (req: Request, res: Response) => {
+    const user = req.user;
+    const {
+      task_id,
+      title,
+      description,
+      scheduledDate,
+      durationMins,
+      priority,
+      status,
+    } = req.body;
+
+    try {
+      const taskExists = await db.task.findUnique({
+        where: {
+          id: task_id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!taskExists) {
+        res.status(400).json({
+          status: "error",
+          error: "Task doesn't exists!",
+        });
+        return;
+      }
+
+      const taskPatch = await db.task.update({
+        where: {
+          userId: user.id,
+          id: taskExists.id,
+        },
+        data: {
+          title,
+          description,
+          scheduledDate,
+          durationMins,
+          priority,
+          status,
+        },
+      });
+
+      if (!taskPatch) {
+        res.status(400).json({
+          status: "error",
+          error: "Error updating task.",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Task updated successfully.",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  },
+);
 
 export { taskRouter };

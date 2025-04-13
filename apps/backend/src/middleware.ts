@@ -1,0 +1,54 @@
+import { Request, Response, NextFunction } from "express";
+import { verifyToken, createClerkClient } from "@clerk/backend";
+import { db } from "@repo/db";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: {
+        id: string;
+      };
+    }
+  }
+}
+
+export const userMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const clerkClient = createClerkClient({
+    secretKey: process.env.CLERK_SECRET_KEY,
+  });
+
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1]!;
+
+  try {
+    const verify = await verifyToken(token, {
+      jwtKey: process.env.CLERK_JWT_KEY,
+      authorizedParties: ["http://localhost:3000"],
+    });
+
+    const userId = verify.sub;
+    const user = await clerkClient.users.getUser(userId);
+
+    const userCheck = user.emailAddresses.find(
+      (email) => email.id === user.primaryEmailAddressId,
+    );
+
+    if (!userCheck) {
+      res.status(400).json({
+        error: "User email not found",
+      });
+    }
+
+    req.user = {
+      id: user.id,
+    };
+
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -1,7 +1,7 @@
 "use server";
 
-import { taskSchema } from "@/lib/defination";
-import { createTest } from "./action";
+import { taskSchema, NewTask } from "@/lib/defination";
+import { apiUrl } from "@/lib/constants";
 
 export const createTask = async (
   state: any,
@@ -11,7 +11,10 @@ export const createTask = async (
   const { success, error, data } = taskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-    due_date: new Date(formData.get("due_date")!.toString()),
+    scheduledDate: new Date(formData.get("scheduledDate")!.toString()),
+    priority: formData.get("priority"),
+    status: formData.get("status"),
+    durationMins: Number(formData.get("durationMins")),
   });
 
   if (!success) {
@@ -21,7 +24,7 @@ export const createTask = async (
     };
   }
 
-  const res = await fetch("http://localhost:8080/create-task", {
+  const res = await fetch(`${apiUrl}/task/create-task`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,8 +35,4 @@ export const createTask = async (
 
   const jsonData = await res.json();
   console.log("json data: ", jsonData);
-};
-
-export const test = async () => {
-  await createTest();
 };

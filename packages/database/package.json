@@ -7,7 +7,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:deploy": "prisma migrate deploy",
-		"db:seed": "tsc -b && node dist/seed.js"
+    "db:seed": "tsc -b && node dist/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +16,8 @@
     "prisma": "^6.6.0"
   },
   "dependencies": {
-		"@repo/typescript-config": "workspace:*",
-    "@prisma/client": "6.6.0",
+    "@prisma/client": "^6.6.0",
+    "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.14.1"
   },
   "exports": {

@@ -1,10 +1,9 @@
 import { Router, Request, Response } from "express";
-import { Task } from "@repo/db";
 const taskRouter: Router = Router();
 
 import { taskSchema } from "../schemas/task";
 import { userMiddleware } from "../middleware";
-import { db } from "@repo/db";
+import { db, Task } from "@repo/db";
 
 // v1/task/create-task
 taskRouter.post(
@@ -21,11 +20,14 @@ taskRouter.post(
       durationMins,
     } = req.body as Task;
 
+    const scheduled = new Date(scheduledDate);
+    const duration = Number(durationMins);
+
     const { success, error, data } = taskSchema.safeParse({
       title,
       description,
-      scheduledDate,
-      durationMins,
+      scheduledDate: scheduled,
+      durationMins: duration,
       priority,
       status,
     });
@@ -41,19 +43,28 @@ taskRouter.post(
       return;
     }
 
+    const userExists = await db.user.findUnique({
+      where: { clerkId: user.id },
+    });
+
+    if (!userExists) {
+      res.status(400).json({
+        error: "error",
+        message: "User not found",
+      });
+      return;
+    }
+
     // prisma update || create
-    const task = await db.task.upsert({
-      create: {
+    const task = await db.task.create({
+      data: {
         title: data.title,
         description: data.description,
         scheduledDate: data.scheduledDate,
         durationMins: data.durationMins,
         priority: data.priority,
         status: data.status,
-      },
-      update: {},
-      where: {
-        id: user.id,
+        userId: userExists.id,
       },
     });
 
@@ -72,12 +83,26 @@ taskRouter.post(
 );
 
 taskRouter.get("/tasks", async (req: Request, res: Response) => {
-  const userId = req.user.id;
+  const { id } = req.user;
 
   try {
+    const user = await db.user.findUnique({
+      where: {
+        clerkId: id,
+      },
+    });
+
+    if (!user) {
+      res.status(500).json({
+        error: "error",
+        message: "User not found",
+      });
+      return;
+    }
+
     const tasks = await db.task.findMany({
       where: {
-        userId,
+        userId: user.id,
       },
     });
 
@@ -101,16 +126,27 @@ taskRouter.delete(
   "/task",
   userMiddleware,
   async (req: Request, res: Response) => {
-    const user = req.user;
+    const { id } = req.user;
     const { task_id } = req.body;
 
     try {
+      const userExists = await db.user.findUnique({
+        where: {
+          clerkId: id,
+        },
+      });
+
+      if (!userExists) {
+        res.status(400).json({
+          error: "error",
+          message: "User not found",
+        });
+        return;
+      }
+
       const taskExists = await db.task.findUnique({
         where: {
           id: task_id,
-        },
-        select: {
-          id: true,
         },
       });
 
@@ -124,7 +160,7 @@ taskRouter.delete(
 
       const taskDelete = await db.task.delete({
         where: {
-          userId: user.id,
+          userId: userExists.id,
           id: taskExists.id,
         },
       });
@@ -165,6 +201,20 @@ taskRouter.patch(
     } = req.body;
 
     try {
+      const userExists = await db.user.findUnique({
+        where: {
+          clerkId: user.id,
+        },
+      });
+
+      if (!userExists) {
+        res.status(400).json({
+          error: "error",
+          message: "User not found",
+        });
+        return;
+      }
+
       const taskExists = await db.task.findUnique({
         where: {
           id: task_id,
@@ -184,7 +234,7 @@ taskRouter.patch(
 
       const taskPatch = await db.task.update({
         where: {
-          userId: user.id,
+          userId: userExists.id,
           id: taskExists.id,
         },
         data: {

@@ -7,6 +7,7 @@ declare global {
     interface Request {
       user: {
         id: string;
+        email: string;
       };
     }
   }
@@ -27,11 +28,17 @@ export const userMiddleware = async (
   try {
     const verify = await verifyToken(token, {
       jwtKey: process.env.CLERK_JWT_KEY,
-      authorizedParties: ["http://localhost:3000"],
+      authorizedParties: [
+        "https://fab0-2406-7400-63-b685-314c-cf6f-dd-583.ngrok-free.app",
+      ],
     });
+
+    console.log("verify: ", verify);
 
     const userId = verify.sub;
     const user = await clerkClient.users.getUser(userId);
+
+    console.log("middleware user: ", user);
 
     const userCheck = user.emailAddresses.find(
       (email) => email.id === user.primaryEmailAddressId,
@@ -41,14 +48,23 @@ export const userMiddleware = async (
       res.status(400).json({
         error: "User email not found",
       });
+      return;
     }
 
+    console.log("userId userId: ", userId);
+
+    /* this is clerk id tech.. */
     req.user = {
-      id: user.id,
+      id: userId,
+      email: userCheck.emailAddress,
     };
 
     next();
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      message: "Invalid user",
+    });
+    return;
   }
 };

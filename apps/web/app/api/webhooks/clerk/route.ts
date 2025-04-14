@@ -10,17 +10,9 @@ export async function POST(req: Request) {
       const { id, email_addresses, image_url, first_name } = evt.data;
       const email = email_addresses[0]?.email_address!;
 
-      const user: User = await db.user.upsert({
-        create: {
-          clerkId: id,
-          email,
-          profilePic: image_url,
-          name: first_name,
-        },
-        update: {
-          name: first_name,
-        },
-        where: {
+      // check 1
+      await db.user.create({
+        data: {
           clerkId: id,
           email,
           profilePic: image_url,

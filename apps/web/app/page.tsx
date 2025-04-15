@@ -1,12 +1,11 @@
 "use client";
 
-import { Chat } from "./chat";
-
 import { useState, useActionState } from "react";
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Calendar } from "@/components/ui/calendar";
 import { durationOptions } from "@/lib/constants";
+import { Chat } from "./chat";
 import {
 	Dialog,
 	DialogContent,

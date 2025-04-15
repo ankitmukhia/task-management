@@ -13,7 +13,9 @@ export const Chat = () => {
 		return prompted(state, formData, token!);
 	};
 
-	const [state, action, isPending] = useActionState(actionWrapper, undefined);
+	const [state, action, isPending
+
+	] = useActionState(actionWrapper, undefined);
 
 	console.log("frontend state: ", state);
 

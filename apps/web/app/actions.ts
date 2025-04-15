@@ -1,13 +1,13 @@
 "use server";
 
-import { taskSchema, promptSchema } from "@/lib/defination";
+import { taskSchema, promptSchema, ActionState } from "@/lib/defination";
 import { apiUrl } from "@/lib/constants";
 
 export const createTask = async (
-  state: any,
+  _state: ActionState,
   formData: FormData,
   token: string,
-) => {
+): Promise<ActionState> => {
   const { success, error, data } = taskSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
@@ -38,10 +38,10 @@ export const createTask = async (
 };
 
 export const prompted = async (
-  state: any,
+  _state: ActionState,
   formData: FormData,
   token: string,
-) => {
+): Promise<ActionState> => {
   const { success, error, data } = promptSchema.safeParse({
     prompt: formData.get("prompt"),
   });

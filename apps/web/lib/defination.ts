@@ -15,3 +15,11 @@ export const promptSchema = z.object({
 });
 
 export type NewTask = z.infer<typeof taskSchema>;
+export type NewPrompt = z.infer<typeof promptSchema>;
+
+export type ActionState =
+  | {
+      message: string;
+      error: z.ZodFormattedError<NewPrompt> | z.ZodFormattedError<NewTask>;
+    }
+  | undefined;

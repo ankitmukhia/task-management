@@ -30,7 +30,7 @@ function formattedPrompt(tasks: Task[], prompt: string) {
   });
 
   const contentTask = Object.entries(grouped)
-    .map(([date, tasks]) => `📅 ${date}:\n${tasks.join("\n")}`)
+    .map(([date, tasks]) => `${date}:\n${tasks.join("\n")}`)
     .join("\n\n");
   return `
 		Here is my current schedule.
@@ -122,6 +122,7 @@ aiRouter.post(
       });
     } catch (err) {
       console.error(err);
+			console.log(err)
     }
   },
 );

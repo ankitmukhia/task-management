@@ -37,7 +37,11 @@ export const createTask = async (
   console.log("json data: ", jsonData);
 };
 
-export const prompted = async (state: any, formData: FormData, token: string) => {
+export const prompted = async (
+  state: any,
+  formData: FormData,
+  token: string,
+) => {
   const { success, error, data } = promptSchema.safeParse({
     prompt: formData.get("prompt"),
   });

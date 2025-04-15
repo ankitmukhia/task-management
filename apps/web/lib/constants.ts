@@ -1,4 +1,4 @@
-export const apiUrl = process.env.BACKEND_URL ?? "http://localhost:3000/v1/api"
+export const apiUrl = process.env.BACKEND_URL ?? "http://localhost:3000/v1/api";
 
 export const durationOptions = [
   { label: "15 minutes", value: "15" },

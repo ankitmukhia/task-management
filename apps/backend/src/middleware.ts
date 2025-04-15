@@ -29,16 +29,12 @@ export const userMiddleware = async (
     const verify = await verifyToken(token, {
       jwtKey: process.env.CLERK_JWT_KEY,
       authorizedParties: [
-        "https://fab0-2406-7400-63-b685-314c-cf6f-dd-583.ngrok-free.app",
+        "https://4094-2406-7400-63-1f87-b482-6ceb-b42b-2ebb.ngrok-free.app",
       ],
     });
 
-    console.log("verify: ", verify);
-
     const userId = verify.sub;
     const user = await clerkClient.users.getUser(userId);
-
-    console.log("middleware user: ", user);
 
     const userCheck = user.emailAddresses.find(
       (email) => email.id === user.primaryEmailAddressId,

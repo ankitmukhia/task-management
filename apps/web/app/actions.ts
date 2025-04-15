@@ -1,6 +1,6 @@
 "use server";
 
-import { taskSchema, NewTask } from "@/lib/defination";
+import { taskSchema, promptSchema } from "@/lib/defination";
 import { apiUrl } from "@/lib/constants";
 
 export const createTask = async (
@@ -25,6 +25,31 @@ export const createTask = async (
   }
 
   const res = await fetch(`${apiUrl}/task/create-task`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const jsonData = await res.json();
+  console.log("json data: ", jsonData);
+};
+
+export const prompted = async (state: any, formData: FormData, token: string) => {
+  const { success, error, data } = promptSchema.safeParse({
+    prompt: formData.get("prompt"),
+  });
+
+  if (!success) {
+    return {
+      message: "Error with schema.",
+      error: error.format(),
+    };
+  }
+
+  const res = await fetch(`${apiUrl}/ai/prompt`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

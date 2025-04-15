@@ -1,5 +1,7 @@
 'use client'
 
+import { Chat } from './chat'
+
 import { useState, useActionState } from 'react'
 import { SignedOut, SignInButton, SignedIn, UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -133,6 +135,7 @@ export default function Home() {
 					</DialogContent>
 				</Dialog>
 
+
 				<div className="">
 					<div className="flex gap-2">
 						<SignedOut>
@@ -147,6 +150,9 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
+
+			<Chat />
+
 		</div >
 	);
 }

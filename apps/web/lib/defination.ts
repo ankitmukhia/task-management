@@ -10,4 +10,8 @@ export const taskSchema = z.object({
   durationMins: z.number(),
 });
 
+export const promptSchema = z.object({
+  prompt: z.string(),
+});
+
 export type NewTask = z.infer<typeof taskSchema>;

@@ -1,10 +1,8 @@
 import { Router } from "express";
 const router: Router = Router();
 
-import 
- { userRouter } from "./user";
-import { taskRouter } 
-from "./task";
+import { userRouter } from "./user";
+import { taskRouter } from "./task";
 import { aiRouter } from "./ai";
 
 // v1/user/

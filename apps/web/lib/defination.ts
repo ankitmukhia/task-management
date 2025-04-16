@@ -20,6 +20,6 @@ export type NewPrompt = z.infer<typeof promptSchema>;
 export type ActionState =
   | {
       message: string;
-      error: z.ZodFormattedError<NewPrompt> | z.ZodFormattedError<NewTask>;
+      error?: z.ZodFormattedError<NewPrompt> | z.ZodFormattedError<NewTask>;
     }
   | undefined;

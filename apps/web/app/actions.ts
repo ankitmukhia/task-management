@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import { taskSchema, promptSchema, ActionState } from "@/lib/defination";
 import { apiUrl } from "@/lib/constants";
@@ -34,13 +34,19 @@ export const createTask = async (
   });
 
   const jsonData = await res.json();
-  console.log("json data: ", jsonData);
+
+  console.log("jsonData: ", jsonData);
+
+  return {
+    message: "Task created successfully",
+  };
 };
 
 export const prompted = async (
   _state: ActionState,
   formData: FormData,
   token: string,
+  onChunk: (chunk: string) => void,
 ): Promise<ActionState> => {
   const { success, error, data } = promptSchema.safeParse({
     prompt: formData.get("prompt"),
@@ -53,26 +59,4 @@ export const prompted = async (
     };
   }
 
-  const res = await fetch(`${apiUrl}/ai/prompt`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
-
-  const reader = res.body?.getReader();
-
-  const decoder = new TextDecoder("utf-8");
-
-  if (!reader) return;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    const chunk = decoder.decode(value, { stream: true });
-    console.log("streamed res: ", chunk);
-  }
 };

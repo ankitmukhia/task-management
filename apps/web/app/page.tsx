@@ -1,6 +1,6 @@
 "use client";
 
-import { Chat } from "./chat";
+import { Chat } from "@/components/chat/chat";
 
 import { useState, useActionState } from "react";
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";

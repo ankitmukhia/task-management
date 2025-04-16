@@ -29,7 +29,7 @@ export const userMiddleware = async (
     const verify = await verifyToken(token, {
       jwtKey: process.env.CLERK_JWT_KEY,
       authorizedParties: [
-        "https://4094-2406-7400-63-1f87-b482-6ceb-b42b-2ebb.ngrok-free.app",
+        "https://similarly-grand-liger.ngrok-free.app",
       ],
     });
 

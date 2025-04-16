@@ -47,6 +47,12 @@ aiRouter.post(
   "/prompt",
   userMiddleware,
   async (req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Transfer-Encoding", "chunked");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
     const { id } = req.user;
     const { prompt } = req.body;
 
@@ -114,15 +120,15 @@ aiRouter.post(
       });
 
       for await (const chunk of chat) {
-        console.log(chunk.text);
+        const text = chunk.text;
+        console.log("LLM res: ", text);
+        res.write(text);
       }
 
-      res.status(200).json({
-        message: "something happend",
-      });
+      res.end();
     } catch (err) {
       console.error(err);
-			console.log(err)
+      console.log(err);
     }
   },
 );

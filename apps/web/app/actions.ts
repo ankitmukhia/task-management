@@ -62,6 +62,17 @@ export const prompted = async (
     body: JSON.stringify(data),
   });
 
-  const jsonData = await res.json();
-  console.log("json data: ", jsonData);
+  const reader = res.body?.getReader();
+
+  const decoder = new TextDecoder("utf-8");
+
+  if (!reader) return;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value, { stream: true });
+    console.log("streamed res: ", chunk);
+  }
 };

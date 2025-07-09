@@ -1,9 +1,1 @@
-# Project Setup
-
-```sh
-git clone your_forked_url
-```
-
-```sh
-
-```
+ai based task manager.
